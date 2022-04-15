@@ -1,127 +1,184 @@
-const currentDisplayField = document.getElementById("main-display");
-const previousDisplayField = document.getElementById("secondary-display");
-const buttonsContainer = document.querySelector(".buttons-container");
-currentDisplayField.innerText = 0
-buttonsContainer.addEventListener("click", (event) => {
-    // number buttons
-    if (event.target.classList.contains("number") && currentDisplayField.innerText.length < 8) 
-    {
-        if (
-        (currentDisplayField.innerText == "" && event.target.value == 0) || 
-        (currentDisplayField.innerText == 0 && !currentDisplayField.innerText.includes('.'))
-        ) {
-            currentDisplayField.innerText = event.target.value;
-        } else {
-            currentDisplayField.innerText += event.target.value;
-        }
+//* ======================================================
+//*                     IOS CALCULATOR
+//* ======================================================
+
+//? Selectors
+//! We can use getElementsByClassName selector to select multiple html elements. But, if we want to iterate these elements, we can use Array.from() method or spread/rest (...) operator.
+// const numberButtons = document.getElementsByClassName("num");
+// Array.from(numberButtons).forEach((element) => {
+//   console.log(element);
+// });
+// [...numberButtons].forEach((element) => {
+//   console.log(element);
+// });
+
+const numberButtons = document.querySelectorAll(".num");
+const operationButtons = document.querySelectorAll(".operator");
+const equalsButton = document.querySelector(".equal");
+const acButton = document.querySelector(".ac");
+const pmButton = document.querySelector(".pm");
+const percentButton = document.querySelector(".percent");
+const prevDisp = document.querySelector(".previous-display");
+const currDisp = document.querySelector(".current-display");
+
+// Operator variables
+let previousOperand = "";
+let currentOperand = "";
+let operation = "";
+
+// After equal or percent buttons are pressed and then new number entered, we should clear the current display. This boolean variable is used to check these buttons are pressed or not
+let equalOrPercentBtnPressed = false;
+
+// numbers and decimal buttons event
+numberButtons.forEach((number) => {
+  number.addEventListener("click", () => {
+    appendNumber(number.textContent);
+    updateDisplay();
+  });
+});
+
+// Operator button event
+operationButtons.forEach((op) => {
+  op.addEventListener("click", () => {
+    chooseOperator(op.textContent);
+    updateDisplay();
+  });
+});
+
+//  Equal button event
+equalsButton.addEventListener("click", () => {
+  compute();
+  updateDisplay();
+  equalOrPercentBtnPressed = true;
+});
+
+//? All Clear(AC) button event
+acButton.addEventListener("click", () => {
+  clear();
+  updateDisplay();
+});
+
+//? plus-minus(+-) button event
+pmButton.addEventListener("click", () => {
+  plusMinus();
+  updateDisplay();
+});
+
+//? percent (%) button event
+percentButton.addEventListener("click", () => {
+  percent();
+  updateDisplay();
+  equalOrPercentBtnPressed = true;
+});
+
+//? When number and decimal buttons are clicked, this function appends the number's textContent to the operands
+const appendNumber = (num) => {
+  //? if our number includes . and user reenters ., it returns
+  if (num === "." && currentOperand.includes(".")) return;
+
+  //? if user enters 0 and then reenter 0 , it returns
+  if (currentOperand === "0" && num === "0") return;
+  if (num == "." && currDisp.innerText.includes("") && currentOperand != '0' && currentOperand != '0.' && currDisp.innerText == 0 ) num = '0.';
+  //? if user enters 0  then dont enter 0 and . , it display this entered value.
+  if (currentOperand === "0" && num !== "0" && num !== ".") {
+    currentOperand = num;
+    return;
+  }
+  //? if user enters more than 10 digit,it returns
+  if (currentOperand.length > 10) return;
+
+
+  //? if equal or percent btn is pressed and then user enter new number, it display just new entered number
+  if (equalOrPercentBtnPressed) {
+    equalOrPercentBtnPressed = false; //* clear for next usage
+    currentOperand = num;
+    return;
+  }
+  //? otherwise,it concatinates all numbers to display them
+  currentOperand += num;
+};
+
+//? Display the numbers and computation
+const updateDisplay = () => {
+  //? if computation or number is too long, it trims
+
+  if (currentOperand.toString().length > 12) {
+    currentOperand = currentOperand.toString().slice(0, 12);
+  }
+  currDisp.textContent = currentOperand;
+
+  
+  //? if operation button is clicked but current display ends with '.', it should removed
+  if (operation != null) {
+    if(previousOperand[previousOperand.length-1] == '.') {
+      previousOperand = previousOperand.slice(0, -1);
     }
-    // decimal button
-    if (event.target.classList.contains("decimal") 
-    && !currentDisplayField.innerText.includes(".")
-    ) {
-        currentDisplayField.innerText += event.target.value;
-}
 
-    // function buttons
+    prevDisp.textContent = `${previousOperand} ${operation}`;
+  } else {
+    prevDisp.textContent = "";
+  }
+};
+const chooseOperator = (op) => {
+  //? if user clicks any operator button without entering any number,it returns
+  if (currentOperand === "") return;
 
-    if (event.target.classList.contains("function")){
-        const functions = event.target.value;
-        switch (functions) {
-            case "AC":
-                currentDisplayField.innerText = "0"; 
-                previousDisplayField.innerText = "";
-                break;
-            case "±":
-                if (!currentDisplayField.innerText.includes("-")) {   // eğer başında eksi yoksa
-                    currentDisplayField.prepend("-");                 // eksi ekle
-                } else {                                              // eksi varsa
-                    currentDisplayField.innerText = currentDisplayField.innerText.slice(1); // eksi sil
-    }
-                break;
-            case "%":
-                if (currentDisplayField.innerText != "") {
-                    currentDisplayField.innerText = currentDisplayField.innerText / 100;
-                }
-                break;
-            case "back":
-                if (currentDisplayField.innerText != "") {
-                    currentDisplayField.innerText = currentDisplayField.innerText.slice(0, -1);
-                }
-        }};
+  //? if user enter any number then press any operator button, it computes
+  if (previousOperand) {
+    compute();
+  }
+  
+ 
+  //? variable swapping
+  operation = op;
+  previousOperand = currentOperand;
+  currentOperand = "";
+};
 
-        // operator buttons
+//? compute the result
+const compute = () => {
+  let computation;
+  const prev = parseFloat(previousOperand);
+  const current = parseFloat(currentOperand);
+  if (isNaN(prev) || isNaN(current)) return;
+  switch (operation) {
+    case "+":
+      computation = prev + current;
+      break;
+    case "-":
+      computation = prev - current;
+      break;
+    case "x":
+      computation = prev * current;
+      break;
+    case "÷":
+      computation = prev / current;
+      break;
+    default:
+      return;
+  }
+  currentOperand = computation;
+  operation = "";
+  previousOperand = "";
+  //? if equal button is clicked, we should reset operation and previousOperand for next usage
+};
 
-        if (event.target.classList.contains("operator")) {
-            const operator = event.target.value;
-            switch (operator) {
-                case "+":
-                    if (currentDisplayField.innerText != "") {              // eğer currentDisplayField boş değilse
-                        previousDisplayField.innerText = `${currentDisplayField.innerText} ${operator}`; // previousDisplayField'a currentDisplayField'ın değeri ve + ekle `; 
-                        currentDisplayField.innerText = "";   // currentDisplayField'ın içeriğini sil
-        }
-                    break;
-                case "-":
-                    if (currentDisplayField.innerText != "") {
-                        previousDisplayField.innerText = `${currentDisplayField.innerText} ${operator}`;
-                        currentDisplayField.innerText = "";
-                    }
-                    break;
-                case "x":
-                    if (currentDisplayField.innerText != "") {
-                        previousDisplayField.innerText = `${currentDisplayField.innerText} ${operator}`;
-                        currentDisplayField.innerText = "";
-                    }
-                    break;
-                case "/":
-                    if (currentDisplayField.innerText != "") {
-                        previousDisplayField.innerText = `${currentDisplayField.innerText} ${operator}`;
-                        currentDisplayField.innerText = "";
-                    } 
-                    break;
-                case "=":
-                    if (currentDisplayField.innerText != "") {
+//? when ac button is clicked, clear all displays
+const clear = () => {
+  operation = "";
+  previousOperand = "";
+  currentOperand = "0";
+  updateDisplay()
+};
 
-                        const currentNumber = Number(currentDisplayField.innerText);   // eğer + işareti var ise currentDisplayfieldı number'a çevirip bir değişkene atadık
-                        const previousNumber = Number(previousDisplayField.innerText.split(" ")[0]); // eğer previousDisplayField boş değilse previousDisplayField'ın ilk değerini number'a çevirip bir değişkene atadık
-                        
-                        if (previousDisplayField.innerText.includes("+")) {
-                            // number'ı almak için + ile split edip ilk değeri alıyoruz
-                            if (currentNumber + previousNumber > 99999999) {
-                                currentDisplayField.innerText = "Error";
-                                previousDisplayField.innerText = "";
-                            } else { 
-                            currentDisplayField.innerText = previousNumber + currentNumber; // currentDisplayField'ın içeriğini previousDisplayField'ın ilk değerini ve currentDisplayField'ın içeriğini topluyoruz 
-                            previousDisplayField.innerText = ""; // previousDisplayField'ın içeriğini sil
-                        } }
-                        if (previousDisplayField.innerText.includes("-")) {
-                            currentDisplayField.innerText = previousNumber - currentNumber;
-                            previousDisplayField.innerText = "";
-                        }   
+//? when pm button is clicked, toggle the polarity of entered value
+const plusMinus = () => {
+  if (!currentOperand && currentOperand != '0') return;
+  currentOperand = currentOperand * -1;
+};
 
-                        if (previousDisplayField.innerText.includes("x")) {
-                            if (currentNumber * previousNumber > 99999999) {
-                                currentDisplayField.innerText = "Error";
-                                previousDisplayField.innerText = "";
-                            } else {
-                            currentDisplayField.innerText = previousNumber * currentNumber;
-                            previousDisplayField.innerText = "";
-                            }
-                        }
-
-                        if (previousDisplayField.innerText.includes("/")) {
-                            if(currentNumber == 0) 
-                            {currentDisplayField.innerText = "Error";
-                        } else {
-                            
-                            const result = previousNumber / currentNumber;
-                            currentDisplayField.innerText =  parseFloat(result).toFixed(2); 
-                        }
-                        previousDisplayField.innerText = "";
-                        }
-                    }
-                    break;
-
-                    default:
-                        break;
-
-}}});
+//? when % button is clicked
+const percent = () => {
+  if (!currentOperand) return;
+  currentOperand = currentOperand / 100;
+};

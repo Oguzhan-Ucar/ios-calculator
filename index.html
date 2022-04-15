@@ -1,44 +1,42 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style.css">
-    <title>Ios Calculator</title>
-</head>
-
-<body>
-    <div class="main-container">
-        <div class="display-container">
-            <div id="secondary-display"></div>
-            <div id="main-display"></div>
-        </div>
-        <div class="buttons-container">
-            <button class="button function" value="AC">AC</button>
-            <button class="button function" value="±">+/-</button>
-            <button class="button function" value="%">%</button>
-            <button class="button function" value="back">←</button>
-            <button class="button number" value="7">7</button>
-            <button class="button number" value="8">8</button>
-            <button class="button number" value="9">9</button>
-            <button class="button operator" value="x">x</button>
-            <button class="button number" value="4">4</button>
-            <button class="button number" value="5">5</button>
-            <button class="button number" value="6">6</button>
-            <button class="button operator" value="-">-</button>
-            <button class="button number" value="1">1</button>
-            <button class="button number" value="2">2</button>
-            <button class="button number" value="3">3</button>
-            <button class="button operator" value="+">+</button>
-            <button class="button number" value="0">0</button>
-            <button class="button decimal" value=".">.</button>
-            <button class="button operator" value="=">=</button>
-            <button class="button operator" value="/">/</button>
-        </div>
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"
+    />
+    <title>JS Calculator</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="calculator">
+      <div class="display">
+        <div class="previous-display"></div>
+        <div class="current-display">0</div>
+      </div>
+      <div class="buttons-container">
+        <div class="button function ac">AC</div>
+        <div class="button function pm">±</div>
+        <div class="button function percent">%</div>
+        <div class="button operator division">÷</div>
+        <div class="button num number-7">7</div>
+        <div class="button num number-8">8</div>
+        <div class="button num number-9">9</div>
+        <div class="button operator multiplication">x</div>
+        <div class="button num number-4">4</div>
+        <div class="button num number-5">5</div>
+        <div class="button num number-6">6</div>
+        <div class="button operator subtraction">-</div>
+        <div class="button num number-1">1</div>
+        <div class="button num number-2">2</div>
+        <div class="button num number-3">3</div>
+        <div class="button operator addition">+</div>
+        <div class="button num number-0">0</div>
+        <div class="button num decimal">.</div>
+        <div class="button equal">=</div>
+      </div>
     </div>
     <script src="app.js"></script>
-</body>
-
+  </body>
 </html>
