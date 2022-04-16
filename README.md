@@ -2,4 +2,4 @@
 
 JavaScript practise
 
-This page deployed with Github >>> https://oguzhan-ucar.github.io/ios-calculator/
+This page deployed with github >>> https://oguzhan-ucar.github.io/ios-calculator/
